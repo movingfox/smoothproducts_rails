@@ -20,17 +20,22 @@
 
 				// If more than one image
 				if (thumbQty > 1) {
+					var firstLarge,firstThumb,
+						defaultImage = $('a.sp-default', this)[0]?true:false;
 					$(this).append('<div class="sp-large"></div><div class="sp-thumbs sp-tb-active"></div>');
-					$('a', this).each(function() {
+					$('a', this).each(function(index) {
 						var thumb = $('img', this).attr('src'),
-							large = $(this).attr('href');
-						$(this).parents('.sp-wrap').find('.sp-thumbs').append('<a href="' + large + '" style="background-image:url(' + thumb + ')"></a>');
+							large = $(this).attr('href'),
+							classes = '';
+						//set default image
+						if((index === 0 && !defaultImage) || $(this).hasClass('sp-default')){
+							classes = ' class="sp-current"';
+							firstLarge = large;
+							firstThumb = $('img', this)[0].src;
+						}
+						$(this).parents('.sp-wrap').find('.sp-thumbs').append('<a href="' + large + '" style="background-image:url(' + thumb + ')"'+classes+'></a>');
 						$(this).remove();
 					});
-					$('.sp-thumbs a:first', this).addClass('sp-current');
-					var firstLarge = $('.sp-thumbs a:first', this).attr('href'),
-						firstThumb = get_url_from_background($('.sp-thumbs a:first', this).css('backgroundImage'));
-						//alert(firstThumb);
 					$('.sp-large', this).append('<a href="' + firstLarge + '" class="sp-current-big"><img src="' + firstThumb + '" alt="" /></a>');
 					$('.sp-wrap').css('display', 'inline-block');
 				// If only one image
@@ -237,11 +242,11 @@
 			$('.sp-large').mousemove(function(e) {
 				var viewWidth = $(this).width(),
 					viewHeight = $(this).height(),
+					viewOffset = $(this).offset(),
 					largeWidth = $(this).find('.sp-zoom').width(),
 					largeHeight = $(this).find('.sp-zoom').height(),
-					parentOffset = $(this).parent().offset(),
-					relativeXPosition = (e.pageX - parentOffset.left),
-					relativeYPosition = (e.pageY - parentOffset.top),
+					relativeXPosition = (e.pageX - viewOffset.left),
+					relativeYPosition = (e.pageY - viewOffset.top),
 					moveX = Math.floor((relativeXPosition * (viewWidth - largeWidth) / viewWidth)),
 					moveY = Math.floor((relativeYPosition * (viewHeight - largeHeight) / viewHeight));
 
